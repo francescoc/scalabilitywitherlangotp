@@ -10,7 +10,6 @@
 
 -export([start/0, stop/0, allocate/0, deallocate/1]).
 -export([init/1, handle_call/3, handle_cast/2, terminate/2, handle_info/2]).
--export([format_status/2]).
 
 %% CLIENT FUNCTIONS
 
@@ -86,9 +85,6 @@ handle_info(_Msg, LoopData) ->
 
 terminate(_Reason, _LoopData) ->
     ok.
-
-format_status(_Opt, [_ProcDict, {Available, Allocated}]) ->
-    {data, [{"State", {{available, Available}, {allocated, Allocated}}}]}.
 
 %% INTERNAL FUNCTIONS
 

@@ -1,7 +1,7 @@
 -module(from).   
 -behaviour(gen_server).
--export([init/1, terminate/2, handle_call/3]).
-
+-export([init/1, handle_call/3]).
+ 
 init(Sum) ->
     {ok, Sum}.
 
