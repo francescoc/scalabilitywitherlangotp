@@ -51,11 +51,11 @@ init(_Args) ->
 
 %% Dummy function. To be replaced with call to BSC.
 
-get_frequencies() -> [10,11,12,13,14, 15].
-
-%get_frequencies() ->
-%    {ok, FreqList} = application:get_env(frequencies),
-%    FreqList.
+get_frequencies() ->
+    case application:get_env(frequencies) of
+	{ok, FreqList} -> FreqList;
+	undefined -> [10,11,12,13,14, 15]
+    end.
 
 %% handle_call({allocate, Pid}, _, {Available, Allocated}) ->
 %%     {reply, {ok, Frequency} | {error, no_resource}, {Available, Allocated}}
