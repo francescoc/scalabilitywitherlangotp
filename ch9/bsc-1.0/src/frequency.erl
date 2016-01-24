@@ -54,7 +54,7 @@ init(_Args) ->
 get_frequencies() ->
     case application:get_env(frequencies) of
 	{ok, FreqList} -> FreqList;
-	undefined -> [10,11,12,13,14, 15]
+	undefined      -> [10,11,12,13,14, 15]
     end.
 
 %% handle_call({allocate, Pid}, _, {Available, Allocated}) ->

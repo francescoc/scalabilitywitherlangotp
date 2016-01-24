@@ -8,8 +8,8 @@
 start(_StartType, _StartArgs) ->
     bsc_sup:start_link().
 
-start_phase(Phase, Type, Args) ->
-    io:format("bsc:start_phase(~p,~p,~p).~n",[Phase, Type, Args]).
+start_phase(StartPhase, StartType, Args) ->
+    io:format("bsc:start_phase(~p,~p,~p).~n", [StartPhase, StartType, Args]).
 
 stop(_Data) ->
     ok.
