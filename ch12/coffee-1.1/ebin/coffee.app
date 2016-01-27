@@ -1,0 +1,11 @@
+{application, coffee,
+   [{description, "Coffee Machine Controller"},
+    {vsn, "1.1"},
+    {modules, [coffee_fsm,
+               coffee_sup,
+	       coffee_app,
+	       hw]},
+    {registered, [coffee_fsm, coffee_Sup]},
+    {applications, [kernel, stdlib, sasl]},
+    {env, []},
+    {mod, {coffee_app, []}}]}. 
