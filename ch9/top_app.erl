@@ -2,7 +2,7 @@
 -behaviour(application).
 -export([start/2, start_phase/3, stop/1]).
 
-start(_Type, _Args) ->
+start(_StartType, _StartArgs) ->
     {ok, _Pid} = bsc_sup:start_link().
 
 start_phase(StartPhase, StartType, Args) ->

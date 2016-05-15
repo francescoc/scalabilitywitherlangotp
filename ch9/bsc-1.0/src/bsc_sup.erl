@@ -5,7 +5,10 @@
 -export([stop/0]).
 
 start_link() ->
-    supervisor:start_link({local,?MODULE}, ?MODULE, []).
+    {ok, Pid} = supervisor:start_link({local,?MODULE},?MODULE, []),
+    freq_overload:add(counters, {}),
+    freq_overload:add(logger, {file, "log"}),
+    {ok, Pid}.
 
 stop() -> exit(whereis(?MODULE), shutdown).
 

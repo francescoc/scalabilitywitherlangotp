@@ -10,7 +10,7 @@ start_link() ->
 stop() -> exit(whereis(?MODULE), shutdown).
 
 init(_) ->
-    ChildSpecList = [child(freq_overload), child(frequency)],
+    ChildSpecList = [child(overload), child(frequency)],
     {ok,{{rest_for_one, 2, 3600}, ChildSpecList}}.
 
 child(Module) ->

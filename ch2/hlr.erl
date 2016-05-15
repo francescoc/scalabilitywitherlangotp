@@ -1,15 +1,9 @@
-%%% @author Francesco Cesarini <francescocesarini@macbook-pro-2.local>
-%%% @copyright (C) 2013, Francesco Cesarini
-%%% @doc
-%%%
-%%% @end
-%%% Created :  9 Jun 2013 by Francesco Cesarini <francescocesarini@macbook-pro-2.local>
+%%% @copyright (c) 2013-2016 Francesco Cesarini
 
 -module(hlr).
 -export([new/0, attach/1, detach/0, lookup_id/1, lookup_ms/1]).
 
-
-new() -> 
+new() ->
     ets:new(msisdn2pid, [public, named_table]),
     ets:new(pid2msisdn, [public, named_table]),
     ok.
@@ -26,7 +20,6 @@ detach() ->
 	[] ->
 	    ok
     end.
-		
 
 lookup_id(Ms) ->
     case ets:lookup(msisdn2pid, Ms) of
@@ -39,4 +32,3 @@ lookup_ms(Pid) ->
 	[] -> {error, invalid};
 	[{Pid, Ms}] -> {ok, Ms}
     end.
-

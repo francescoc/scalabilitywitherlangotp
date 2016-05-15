@@ -1,7 +1,7 @@
 -module(phone_sup).
 -behaviour(supervisor).
 
--export([start_link/0, attach_phone/1, detatch_phone/1]).
+-export([start_link/0, attach_phone/1, detach_phone/1]).
 -export([init/1]).
 
 start_link() ->
@@ -11,23 +11,23 @@ init([]) ->
     {ok, {{one_for_one, 10, 3600}, []}}.
 
 
-%%Race condiiton risk. Device attached after we check but before we start
+%%Race condition risk. Device attached after we check but before we start
 
 attach_phone(Ms) ->
     case hlr:lookup_id(Ms) of
-	{ok, _Pid}    -> 
+	{ok, _Pid}    ->
 	    {error, attached};
-	_NotAttached -> 
-	    ChildSpec = {Ms, {phone_fsm, start_link, [Ms]}, 
+	_NotAttached ->
+	    ChildSpec = {Ms, {phone_fsm, start_link, [Ms]},
 			 transient, 2000, worker, [phone_fsm]},
 	    supervisor:start_child(?MODULE, ChildSpec)
     end.
 
-detatch_phone(Ms) ->
+detach_phone(Ms) ->
     case hlr:lookup_id(Ms) of
-	{ok, _Pid}    -> 
+	{ok, _Pid}    ->
 	    supervisor:terminate_child(?MODULE, Ms),
-	    supervisor:delete_child(?MODULE, Ms); 
-	_NotAttached -> 
+	    supervisor:delete_child(?MODULE, Ms);
+	_NotAttached ->
 	    {error, detached}
     end.

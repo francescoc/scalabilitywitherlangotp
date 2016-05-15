@@ -15,18 +15,11 @@ init(Mod, Args) ->
 
 
 call(Name, Msg) ->
-    Ref = erlang:monitor(process, Name),
-    catch Name ! {request, {Ref, self()}, Msg},
-    receive
-	{reply, Ref, Reply} ->
-	    erlang:demonitor(Ref, [flush]),
-	    Reply;
-	{'DOWN', Ref, process, _Name, _Reason} ->
-	    {error, no_proc}
-    end.
+    Name ! {request, self(), Msg},
+    receive {reply, Reply} -> Reply end.
 
-reply({Ref, To}, Reply) ->
-    To ! {reply, Ref, Reply}.
+reply(To, Reply) ->
+    To ! {reply, Reply}.
 
 loop(Mod, State) ->
     receive
@@ -36,5 +29,5 @@ loop(Mod, State) ->
 	    loop(Mod, NewState);
 	{stop, From}  ->
 	    Reply = Mod:terminate(State),
-	    From ! {reply, Reply}
+	    reply(From, Reply)
     end.

@@ -1,16 +1,10 @@
-%%% @copyright (C) 2013, Francesco Cesarini
-
 -module(test_fsm).
 -behaviour(gen_fsm).
 
-%% API
 -export([start_link/2, start/2]).
 
-%% gen_fsm callbacks
 -export([init/1, state_name/2, state_name/3, handle_event/3,
 	 handle_sync_event/4, handle_info/3, terminate/3, code_change/4]).
-
--define(SERVER, ?MODULE).
 
 -record(state, {}).
 
@@ -49,4 +43,3 @@ terminate(_Reason, _StateName, _State) ->
 
 code_change(_OldVsn, StateName, State, _Extra) ->
     {ok, StateName, State}.
-

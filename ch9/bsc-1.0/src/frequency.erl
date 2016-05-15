@@ -1,11 +1,5 @@
-%%% File    : frequency.erl
-%%% Author  :  <francesco@erlang-consulting.com>
-%%% Description : Server example from lecture notes
-%%% Created : 25 Mar 2003 by  <francesco@erlang-consulting.com>
-
 -module(frequency).
 -behaviour(gen_server).
-
 -export([start_link/0, stop/0, allocate/0, deallocate/1]).
 -export([init/1, handle_call/3, handle_cast/2, terminate/2, handle_info/2]).
 -export([format_status/2]).
@@ -22,7 +16,7 @@ start_link() ->
 %% Stops the frequency server.
 
 stop() ->
-   gen_server:cast(frequency, stop).
+    gen_server:cast(frequency, stop).
 
 
 %% allocate() -> {ok, Frequency} | {error, no_resource}
@@ -30,7 +24,7 @@ stop() ->
 %% Frequency must be deallocated on termination.
 
 allocate() ->
-   gen_server:call(frequency, {allocate, self()}).
+    gen_server:call(frequency, {allocate, self()}).
 
 %% deallocate() -> ok
 %% Frees a frequency so it can be used by another client.
@@ -50,28 +44,30 @@ init(_Args) ->
     {ok, Frequencies}.
 
 %% Dummy function. To be replaced with call to BSC.
+get_frequencies() -> [10,11,12,13,14,15].
 
-get_frequencies() ->
-    case application:get_env(frequencies) of
-	{ok, FreqList} -> FreqList;
-	undefined      -> [10,11,12,13,14, 15]
-    end.
+%% This version of this function needs to be used with the
+%% bsc.config and rb.config files
+						%get_frequencies() ->
+						%    {ok, FreqList} = application:get_env(frequencies),
+						%    FreqList.
+
 
 %% handle_call({allocate, Pid}, _, {Available, Allocated}) ->
 %%     {reply, {ok, Frequency} | {error, no_resource}, {Available, Allocated}}
-%% Callback for allocating resources. 
+%% Callback for allocating resources.
 
 handle_call({allocate, Pid}, _From, Frequencies) ->
     {NewFrequencies, Reply} = allocate(Frequencies, Pid),
     {reply, Reply, NewFrequencies}.
 
 
-%% handle_cast({deallocate, Freq}, Frequencies) -> {noreply, NewFrequencies}; 
+%% handle_cast({deallocate, Freq}, Frequencies) -> {noreply, NewFrequencies};
 %% Callback for deallocating resources
 
 handle_cast({deallocate, Freq}, Frequencies) ->
     NewFrequencies = deallocate(Frequencies, Freq),
-    {noreply, NewFrequencies}; 
+    {noreply, NewFrequencies};
 
 %% handle_cast(stop, LoopData) -> {stop, normal, LoopData}.
 %% callback to stop the gen_server.
@@ -93,7 +89,7 @@ format_status(_Opt, [_ProcDict, {Available, Allocated}]) ->
 
 %% INTERNAL FUNCTIONS
 
-%% Help functions used to allocate and deallocate resources.
+%% Helper functions used to allocate and deallocate resources.
 
 allocate({[], Allocated}, _Pid) ->
     freq_overload:frequency_denied(),
@@ -112,4 +108,3 @@ deallocate({Free, Allocated}, Res) ->
     end,
     NewAllocated = lists:keydelete(Res, 1, Allocated),
     {[Res|Free],  NewAllocated}.
-

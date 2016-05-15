@@ -1,7 +1,7 @@
 -module(my_supervisor).
 -export([start/2, init/1, stop/1]).
 
-start(Name, ChildSpecList) -> 
+start(Name, ChildSpecList) ->
     register(Name, Pid = spawn(?MODULE, init, [ChildSpecList])),
     {ok, Pid}.
 
@@ -27,9 +27,13 @@ loop(ChildList) ->
     end.
 
 restart_child(Pid, ChildList) ->
-    {value, {Pid, {M,F,A}}} = lists:keysearch(Pid, 1, ChildList),
+    {Pid, {M,F,A}} = lists:keyfind(Pid, 1, ChildList),
     {ok, NewPid} = apply(M,F,A),
     lists:keyreplace(Pid,1,ChildList,{NewPid, {M,F,A}}).
 
-terminate(ChildList) -> 
+terminate(ChildList) ->
     lists:foreach(fun({Pid, _}) -> exit(Pid, kill) end, ChildList).
+
+%%terminate([{Pid, _} | ChildList]) ->
+%%    exit(Pid, kill),
+%%    terminate(ChildList).

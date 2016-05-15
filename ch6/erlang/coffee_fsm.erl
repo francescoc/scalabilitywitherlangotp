@@ -1,5 +1,6 @@
 -module(coffee_fsm).
--export([tea/0, espresso/0, americano/0, cappuccino/0, pay/1, cup_removed/0, cancel/0]).
+-export([tea/0, espresso/0, americano/0, cappuccino/0,
+	 pay/1, cup_removed/0, cancel/0]).
 -export([start_link/0, init/0]).
 
 start_link() ->
@@ -24,7 +25,7 @@ cup_removed() -> ?MODULE ! cup_removed.
 pay(Coin)     -> ?MODULE ! {pay, Coin}.
 cancel()      -> ?MODULE ! cancel.
 
-%% State: drink selection  
+%% State: drink selection 
 selection() ->
     receive
 	{selection, Type, Price} ->
@@ -39,20 +40,21 @@ selection() ->
 
 %% State: payment
 payment(Type, Price, Paid) ->
-    receive 
+    receive
 	{pay, Coin} ->
-	    if Coin + Paid >= Price ->
+	    if
+		Coin + Paid >= Price ->
 		    hw:display("Preparing Drink.",[]),
 		    hw:return_change(Coin + Paid - Price),
 		    hw:drop_cup(), hw:prepare(Type),
 		    hw:display("Remove Drink.", []),
 		    remove();
-	       true ->
+		true ->
 		    ToPay = Price - (Coin + Paid),
 		    hw:display("Please pay:~w",[ToPay]),
 		    payment(Type, Price, Coin + Paid)
 	    end;
-	cancel ->   
+	cancel ->
 	    hw:display("Make Your Selection", []),
 	    hw:return_change(Paid),
 	    selection();
@@ -69,7 +71,6 @@ remove() ->
 	{pay, Coin} ->
 	    hw:return_change(Coin),
 	    remove();
-	_Other ->   % cancel/selection  
+	_Other ->   % cancel/selection
 	    remove()
     end.
-

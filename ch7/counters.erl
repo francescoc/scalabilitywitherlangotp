@@ -1,7 +1,8 @@
 -module(counters).
 -behaviour(gen_event).
--export([init/1, terminate/2, handle_event/2, handle_info/2]). 
+-export([init/1, terminate/2, handle_event/2, handle_info/2]).
 -export([get_counters/1, handle_call/2]).
+
 
 get_counters(Pid) ->
     gen_event:call(Pid, counters, get_counters).
@@ -19,7 +20,7 @@ handle_event(Event, TableId) ->
     try ets:update_counter(TableId, Event, 1) of
 	_ok -> {ok, TableId}
     catch
-	error:_ -> ets:insert(TableId, {Event, 1}), 
+	error:_ -> ets:insert(TableId, {Event, 1}),
 		   {ok, TableId}
     end.
 

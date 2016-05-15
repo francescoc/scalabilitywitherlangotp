@@ -1,25 +1,14 @@
-%%%-------------------------------------------------------------------
-%%% @author Francesco Cesarini <francescocesarini@macbook-pro-2.local>
-%%% @copyright (C) 2013, Francesco Cesarini
-%%% @doc
-%%%
-%%% @end
-%%% Created :  8 Jun 2013 by Francesco Cesarini <francescocesarini@macbook-pro-2.local>
-%%%-------------------------------------------------------------------
+%%% @copyright (c) 2013,2016 Francesco Cesarini
 -module(phone_fsm).
-
 -behaviour(gen_fsm).
 
-%% API
 -export([start_link/1]).
 
-%% gen_fsm callbacks
 -export([init/1, terminate/3, handle_sync_event/4]).
-%% Client Functions
--export([inbound/1, action/2, busy/1, reject/1, accept/1, hangup/1]).
-%% States
--export([idle/2, calling/2, connected/2, receiving/2]).
 
+-export([inbound/1, action/2, busy/1, reject/1, accept/1, hangup/1]).
+
+-export([idle/2, calling/2, connected/2, receiving/2]).
 
 start_link(Ms) ->
     gen_fsm:start_link(?MODULE, Ms, [{debug, [trace]}]).
@@ -27,7 +16,7 @@ start_link(Ms) ->
 
 init(Ms) ->
     process_flag(trap_exit, true),
-    hlr:attach(Ms), 
+    hlr:attach(Ms),
     {ok, idle, Ms}.
 
 terminate(_Reason, idle, _Ms) ->
@@ -35,7 +24,8 @@ terminate(_Reason, idle, _Ms) ->
 terminate(_Reason, calling, {_Ms, CallingMsId}) ->
     phone_fsm:hangup(CallingMsId),
     hlr:detach();
-terminate(_Reason, connected, {_Ms, OtherMsId, _Freq}) -> %% We hang up, We initated call
+terminate(_Reason, connected, {_Ms, OtherMsId, _Freq}) ->
+    %% We hang up, We initated call
     phone_fsm:hangup(OtherMsId),
     hlr:detach();
 terminate(_Reason, receiving, {_Ms, FromMsId}) ->
@@ -46,7 +36,6 @@ terminate(_Reason, receiving, {_Ms, FromMsId}) ->
 action({outbound, ToMs}, MsId) ->
     gen_fsm:sync_send_all_state_event(MsId, {outbound, ToMs});
 action(Action, MsId) ->  %Action == hangup, reject, accept
-    
     gen_fsm:send_event(MsId, {action,Action}).
 
 
@@ -63,7 +52,7 @@ inbound(ToMsId) ->
 %%--------------------------------------------------------------------
 %%--------------------------------------------------------------------
 
-%% Event outbound in state idle is synchronous and handled in 
+%% Event outbound in state idle is synchronous and handled in
 %% handle_sync_event
 
 idle({inbound, FromMsId}, Ms) ->
@@ -76,13 +65,11 @@ idle(_Ignore, State) ->  % , hangup, reject, accept
 
 %% Beware of race conditions. This event could be received right after
 %% the other party accepts, meaning we would handle it not here but in state
-%% connected. 
+%% connected.
 
 calling({action, hangup}, {Ms, CallingMsId}) ->
     phone_fsm:hangup(CallingMsId),
     {next_state, idle, Ms};
-
-
 calling({busy, Pid}, {Ms, Pid}) ->
     phone:reply(busy, Pid, Ms),
     {next_state, idle, Ms};
@@ -118,10 +105,10 @@ connected({action, hangup}, {Ms, OtherMsId}) -> %% We hang up, Other initated ca
     {next_state, idle, Ms};
 
 connected({hangup, OtherMsId}, {Ms, OtherMsId}) -> %% they hang Up
-    phone:reply(hangup, OtherMsId, Ms), 
+    phone:reply(hangup, OtherMsId, Ms),
     {next_state, idle, Ms};
 connected({hangup, OtherMsId}, {Ms, OtherMsId, Freq}) -> %% they hang Up
-    phone:reply(hangup, OtherMsId, Ms), 
+    phone:reply(hangup, OtherMsId, Ms),
     frequency:deallocate(Freq),
     {next_state, idle, Ms};
 connected(_Ignore, State) ->
@@ -141,7 +128,7 @@ receiving({inbound, FromMsId}, State) ->  %Others
     phone_fsm:busy(FromMsId),
     {next_state, receiving, State};
 receiving(_Ignore, State) ->  % {action, hangup}
-  io:format("In receiving, ignored. State:~w, Event:~w~n",[State, _Ignore]),
+    io:format("In receiving, ignored. State:~w, Event:~w~n",[State, _Ignore]),
     {next_state, receiving, State}.
 
 handle_sync_event({outbound, ToMs}, _From, idle, Ms) ->
@@ -157,4 +144,3 @@ handle_sync_event({outbound, ToMs}, _From, idle, Ms) ->
     end;
 handle_sync_event({outbound, _ToMSISDN}, _From, State, MSISDN) ->
     {reply, {error, busy}, State, MSISDN}.
-

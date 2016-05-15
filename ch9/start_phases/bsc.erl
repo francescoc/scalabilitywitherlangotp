@@ -1,5 +1,4 @@
 -module(bsc).
-
 -behaviour(application).
 
 %% Application callbacks
@@ -9,7 +8,8 @@ start(_StartType, _StartArgs) ->
     bsc_sup:start_link().
 
 start_phase(StartPhase, StartType, Args) ->
-    io:format("bsc:start_phase(~p,~p,~p).~n", [StartPhase, StartType, Args]).
+    io:format("bsc:start_phase(~p,~p,~p).~n",
+              [StartPhase, StartType, Args]).
 
 stop(_Data) ->
     ok.

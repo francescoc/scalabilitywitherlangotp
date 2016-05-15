@@ -1,15 +1,16 @@
 -module(frequency).
 -export([start/0, stop/0, allocate/0, deallocate/1]).
 -export([init/0]).
-%% These are the start functions used to create and %% initialize the server.
 
+%% These are the start functions used to create and
+%% initialize the server.
 start() -> register(frequency, spawn(frequency, init, [])).
 
 init() ->
     Frequencies = {get_frequencies(), []},
     loop(Frequencies).
 
-%% Hard Coded
+%% Hard-coded
 get_frequencies() -> [10,11,12,13,14,15].
 
 stop()	         -> call(stop).
@@ -40,7 +41,8 @@ loop(Frequencies) ->
     end.
 
 
-%% The Internal Help Functions used to allocate and %% deallocate frequencies.
+%% The Internal Helper Functions used to allocate and
+%% deallocate frequencies.
 allocate({[], Allocated}, _Pid) ->
     {{[], Allocated}, {error, no_frequency}};
 allocate({[Freq|Free], Allocated}, Pid) ->

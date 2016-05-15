@@ -1,8 +1,3 @@
-%%% File    : frequency.erl
-%%% Author  :  <francesco@erlang-consulting.com>
-%%% Description : Server example from lecture notes
-%%% Created : 25 Mar 2003 by  <francesco@erlang-consulting.com>
-
 -module(frequency).
 -behaviour(gen_server).
 
@@ -22,7 +17,7 @@ start_link() ->
 %% Stops the frequency server.
 
 stop() ->
-   gen_server:cast(frequency, stop).
+    gen_server:cast(frequency, stop).
 
 
 %% allocate() -> {ok, Frequency} | {error, no_resource}
@@ -30,7 +25,7 @@ stop() ->
 %% Frequency must be deallocated on termination.
 
 allocate() ->
-   gen_server:call(frequency, {allocate, self()}).
+    gen_server:call(frequency, {allocate, self()}).
 
 %% deallocate() -> ok
 %% Frees a frequency so it can be used by another client.
@@ -90,7 +85,7 @@ format_status(_Opt, [_ProcDict, {Available, Allocated}]) ->
 
 %% INTERNAL FUNCTIONS
 
-%% Help functions used to allocate and deallocate resources.
+%% Helper functions used to allocate and deallocate resources.
 
 allocate({[], Allocated}, _Pid) ->
     freq_overload:frequency_denied(),
@@ -109,4 +104,3 @@ deallocate({Free, Allocated}, Res) ->
     end,
     NewAllocated = lists:keydelete(Res, 1, Allocated),
     {[Res|Free],  NewAllocated}.
-

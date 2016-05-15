@@ -4,23 +4,24 @@
 -export([start_link/0, stop/0]).
 -export([init/1, terminate/3, handle_event/3]).    %% Callback functions
 -export([selection/2, payment/2, remove/2]).       %% States
--export([americano/0, cappuccino/0, tea/0, espresso/0, pay/1, cancel/0, cup_removed/0]). %% Client Functions 
+-export([americano/0, cappuccino/0, tea/0,         %% Client Functions
+         espresso/0, pay/1, cancel/0, cup_removed/0]).
 
 -define(TIMEOUT, 10000).
 
 start_link() ->
     gen_fsm:start_link({local, ?MODULE}, ?MODULE, [], []).
 
-init([]) -> 
+init([]) ->
     hw:reboot(),
     hw:display("Make Your Selection", []),
     process_flag(trap_exit, true),
     {ok, selection, []}.
 
 %% Client Functions for Drink Selections
-tea()        -> gen_fsm:send_event(?MODULE,{selection,tea,100}).   
+tea()        -> gen_fsm:send_event(?MODULE,{selection,tea,100}).
 espresso()   -> gen_fsm:send_event(?MODULE,{selection,espresso,150}).
-americano()  -> gen_fsm:send_event(?MODULE,{selection,americano,150}).   
+americano()  -> gen_fsm:send_event(?MODULE,{selection,americano,150}).
 cappuccino() -> gen_fsm:send_event(?MODULE,{selection,cappuccino,150}).
 
 %% Client Functions for Actions
@@ -35,7 +36,7 @@ selection({selection,Type,Price}, _LoopData) ->
 selection({pay, Coin}, LoopData) ->
   hw:return_change(Coin),
   {next_state, selection, LoopData};
-selection(_Other, LoopData) ->  
+selection(_Other, LoopData) ->
   {next_state, selection, LoopData}.
 
 
@@ -69,7 +70,7 @@ remove(cup_removed, LoopData) ->
 remove({pay, Coin}, LoopData) ->
     hw:return_change(Coin),
     {next_state, remove, LoopData};
-remove(_Other, LoopData) ->          
+remove(_Other, LoopData) ->
     {next_state, remove, LoopData}.
 
 
@@ -82,4 +83,3 @@ terminate(_Reason, payment, {_Type,_Price,Paid}) ->
     hw:return_change(Paid);
 terminate(_Reason, _StateName, _LoopData) ->
     ok.
-

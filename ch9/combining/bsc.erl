@@ -1,4 +1,3 @@
-
 -module(bsc).
 -behaviour(application).
 -behaviour(supervisor).
@@ -21,4 +20,3 @@ init(_) ->
 
 child(Module) ->
     {Module, {Module, start_link, []}, permanent, 2000, worker, [Module]}.
-

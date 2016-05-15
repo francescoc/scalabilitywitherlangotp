@@ -18,4 +18,3 @@ loop() ->
 	stop ->
 	    ok
     end.
-

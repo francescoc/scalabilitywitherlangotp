@@ -27,20 +27,9 @@ start_link(Ms) ->
 
 init(Ms) ->
     process_flag(trap_exit, true),
-    hlr:attach(Ms), 
+    hlr:attach(Ms),
     {ok, idle, Ms}.
 
-terminate(_Reason, idle, _Ms) ->
-    hlr:detach();
-terminate(_Reason, calling, {_Ms, CallingMsId}) ->
-    phone_fsm:hangup(CallingMsId),
-    hlr:detach();
-terminate(_Reason, connected, {_Ms, OtherMsId, _Freq}) -> %% We hang up, We initated call
-    phone_fsm:hangup(OtherMsId),
-    hlr:detach();
-terminate(_Reason, receiving, {_Ms, FromMsId}) ->
-    phone_fsm:reject(FromMsId),
-    hlr:detach().
 
 %% Events from the Phone
 action({outbound, ToMs}, MsId) ->

@@ -1,15 +1,11 @@
-%%% @author Francesco Cesarini <francescoc@ramone>
-%%% @copyright (C) 2015, Francesco Cesarini
-%%% @doc
-%%%
-%%% @end
-%%% Created : 28 Nov 2015 by Francesco Cesarini <francescoc@ramone>
+%%% @copyright (c) 2015-2016 Francesco Cesarini
 
 -module(frequency).
 -behaviour(gen_server).
 
 -export([start/0, stop/0, allocate/0, deallocate/1]).
 -export([init/1, handle_call/3, handle_cast/2, terminate/2, handle_info/2]).
+-export([format_status/2]).
 
 %% CLIENT FUNCTIONS
 
@@ -23,7 +19,7 @@ start() ->
 %% Stops the frequency server.
 
 stop() ->
-   gen_server:cast(frequency, stop).
+    gen_server:cast(frequency, stop).
 
 
 %% allocate() -> {ok, Frequency} | {error, no_resource}
@@ -31,7 +27,7 @@ stop() ->
 %% Frequency must be deallocated on termination.
 
 allocate() ->
-   gen_server:call(frequency, {allocate, self()}).
+    gen_server:call(frequency, {allocate, self()}).
 
 %% deallocate() -> ok
 %% Frees a frequency so it can be used by another client.
@@ -57,19 +53,19 @@ get_frequencies() -> [10,11,12,13,14, 15].
 
 %% handle_call({allocate, Pid}, _, {Available, Allocated}) ->
 %%     {reply, {ok, Frequency} | {error, no_resource}, {Available, Allocated}}
-%% Callback for allocating resources. 
+%% Callback for allocating resources.
 
 handle_call({allocate, Pid}, _From, Frequencies) ->
     {NewFrequencies, Reply} = allocate(Frequencies, Pid),
     {reply, Reply, NewFrequencies}.
 
 
-%% handle_cast({deallocate, Freq}, Frequencies) -> {noreply, NewFrequencies}; 
+%% handle_cast({deallocate, Freq}, Frequencies) -> {noreply, NewFrequencies};
 %% Callback for deallocating resources
 
 handle_cast({deallocate, Freq}, Frequencies) ->
     NewFrequencies = deallocate(Frequencies, Freq),
-    {noreply, NewFrequencies}; 
+    {noreply, NewFrequencies};
 
 %% handle_cast(stop, LoopData) -> {stop, normal, LoopData}.
 %% callback to stop the gen_server.
@@ -86,9 +82,12 @@ handle_info(_Msg, LoopData) ->
 terminate(_Reason, _LoopData) ->
     ok.
 
+format_status(_Opt, [_ProcDict, {Available, Allocated}]) ->
+    {data, [{"State", {{available, Available}, {allocated, Allocated}}}]}.
+
 %% INTERNAL FUNCTIONS
 
-%% Help functions used to allocate and deallocate resources.
+%% Helper functions used to allocate and deallocate resources.
 
 allocate({[], Allocated}, _Pid) ->
     {{[], Allocated}, {error, no_frequency}};
@@ -98,4 +97,3 @@ allocate({[Res|Resources], Allocated}, Pid) ->
 deallocate({Free, Allocated}, Res) ->
     NewAllocated = lists:keydelete(Res, 1, Allocated),
     {[Res|Free],  NewAllocated}.
-

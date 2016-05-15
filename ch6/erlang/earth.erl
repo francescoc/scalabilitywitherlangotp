@@ -1,5 +1,4 @@
 -module(earth).
-
 -export([start/0, init/0]).
 
 start() ->
@@ -21,8 +20,6 @@ night() ->
 	    make_roosters_crow(),
 	    day()
     end.
-
-
 
 create_earth() -> ok.
 make_roosters_crow() -> ok.

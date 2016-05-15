@@ -13,7 +13,6 @@ init([]) ->
 	  [{ms, {phone_fsm, start_link, []},
 	    transient, 2000, worker, [phone_fsm]}]}}.
 
-
 %%Race condiiton risk. Device attached after we check but before we start
 
 attach_phone(Ms) ->
