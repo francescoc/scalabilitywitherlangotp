@@ -2,7 +2,7 @@
 -export([go/0, loop/0]).
 
 go() ->
-    Pid = spawn_link(echo, loop, []),
+    Pid = spawn_link(echo_link, loop, []),
     Pid ! {self(), hello},
     receive
 	{Pid, Msg} ->
