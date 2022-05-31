@@ -6,8 +6,15 @@ start(Name, Args) ->
     register(Name, spawn(server, init, [Name, Args])).
 
 stop(Name) ->
-    Name ! {stop, self()},
-    receive {reply, Reply} -> Reply end.
+    Ref = erlang:monitor(process, Name),
+    Name ! {stop, {Ref, self()}},
+    receive 
+	{reply, Ref, Reply} -> 
+		erlang:demonitor(Ref),
+		Reply;
+	{'DOWN', Ref, process, _Name, _Reason} ->
+		{error, no_proc}
+    end.
 
 init(Mod, Args) ->
     State = Mod:init(Args),
