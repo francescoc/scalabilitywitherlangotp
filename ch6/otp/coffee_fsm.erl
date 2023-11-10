@@ -77,7 +77,7 @@ remove(_Other, LoopData) ->
 
 stop() -> gen_fsm:sync_send_all_state_event(?MODULE, stop).
 
-handle_event(stop, State, LoopData) ->
+handle_event(stop, _State, LoopData) ->
     {stop, normal, LoopData}.
 
 terminate(_Reason, payment, {_Type,_Price,Paid}) ->
